@@ -30,39 +30,42 @@ app.mount('/static',StaticFiles(directory= "static"),name = "static")
 
 
 @app.get('/',response_class=HTMLResponse)
-async def get_registration(request:Request):
+def get_registration(request:Request):
     return templates.TemplateResponse("signup.html",{'request':request})
 
 
 
-
 @app.post('/signup',response_class=HTMLResponse)
-async def post_registration(request:Request,
+def post_registration(request:Request,
                     username:str = Form(...),
                     password:str = Form(...),
                     email:str = Form(...),
                     firstname:str = Form(...),
-                    lastname:str = Form(...)):
-    print("post method called")
+                    lastname:str = Form(...),
+                    image_database: UploadFile = File(...)):
+   
+
     print(username,password,email,firstname,lastname)
-    person ={'username':username,'password':password,'email':email,'firstname':firstname,'lastname':lastname}
+    person ={'username':username,
+             'password':password,
+             'email':email,
+             'firstname':firstname,
+             'lastname':lastname,
+             'image':image_database.filename}
     user_collection.insert_one(person)
     return templates.TemplateResponse("login.html",{'request':request})
 
 
 @app.get('/login',response_class=HTMLResponse)
-async def post_registration(request:Request):
+def post_registration(request:Request):
     print("getlogin")
     
     return templates.TemplateResponse("login.html",{'request':request})
 
 
 @app.post('/login',response_class=HTMLResponse)
-async def login_page(request:Request,username:str = Form(...),password:str = Form(...)):
-    print("post login")
-    print(username)
-    print(password)
-
+def login_page(request:Request,username:str = Form(...),password:str = Form(...)):
+   
     name = user_collection.find_one({'username':username,'password':password})
     if name:
         print("loggedin")
@@ -74,25 +77,68 @@ async def login_page(request:Request,username:str = Form(...),password:str = For
         return RedirectResponse('/login')
 
 
+@app.post('/home', response_class=HTMLResponse)
+def home_page(request: Request):
+
+    posts_details = post_collection.find()
+
+    user = user_collection.find_one({'username':logged_in_user})
+
+    posts_dic=[]
+    for pos in posts_details:
+        name = user_collection.find_one({'username':pos['username']})
+
+        
+
+        posts_list ={
+            'username':pos['username'],
+            'caption':pos['caption'],
+            'description':pos['description'],
+            'likes':len(pos['likes']),
+            'posted_user':name
+        }
+        
+        if(pos['video_filename']==""):
+            posts_list['image'] = pos['image_filename']
+        else:
+            posts_list['video'] = pos['video_filename']
+        posts_dic.append(posts_list)
+
+    return templates.TemplateResponse("home.html", {'request': request, 'user': user,"posts_dic":posts_dic})
+
+
+
 
 
 
 @app.get('/home', response_class=HTMLResponse)
-async def home_page(request: Request):
+def home_page(request: Request):
 
-    people = user_collection.find()
     posts_details = post_collection.find()
 
+    user = user_collection.find_one({'username':logged_in_user})
 
-    posts_dic={}
-    # for pos in posts_details:
-    #     posts_dic[pos['username']] ={
-    #         'caption':pos['caption'],
-    #         'description':pos['description'],
-    #         'likes':len(pos['likes']),
-    #     }
+    posts_dic=[]
+    for pos in posts_details:
+        name = user_collection.find_one({'username':pos['username']})
 
-    return templates.TemplateResponse("home.html", {'request': request, 'user': logged_in_user,'posts':posts_dic})
+        
+
+        posts_list ={
+            'username':pos['username'],
+            'caption':pos['caption'],
+            'description':pos['description'],
+            'likes':len(pos['likes']),
+            'posted_user':name
+        }
+        
+        if(pos['video_filename']==""):
+            posts_list['image'] = pos['image_filename']
+        else:
+            posts_list['video'] = pos['video_filename']
+        posts_dic.append(posts_list)
+
+    return templates.TemplateResponse("home.html", {'request': request, 'user': user,"posts_dic":posts_dic})
 
 
 
@@ -103,7 +149,7 @@ async def home_page(request: Request):
 
 
 @app.get('/addpost',response_class=HTMLResponse)
-async def home_page(request:Request):
+def addpost(request:Request):
     return templates.TemplateResponse("create.html",{'request':request,'user':logged_in_user})
 
 
@@ -112,40 +158,83 @@ async def home_page(request:Request):
 
 
 
+
+
+
+
+
 @app.post('/add_image',response_class = HTMLResponse)
-async def add_image(request:Request,
+def add_image(request:Request,
                     caption:str = Form(...),
                     description:str = Form(...),
                     image_database: UploadFile = File(...)):
     
-    global logged_in_user
     post = {'username':logged_in_user,
             'caption':caption,
             'description':description,
             'image_filename': image_database.filename,
+            'video_filename': "",
             'likes':[],
+            'comments':[],
             'created_at': datetime.now()
         }
     
+    # print(post)
     post_collection.insert_one(post)
 
+    people = user_collection.find()
+    posts_details = post_collection.find()
 
-    return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user})
+
+    posts_dic=[]
+    for pos in posts_details:
+        name = user_collection.find_one({'username':pos['username']})
+        
+        posts_list ={
+            'username':pos['username'],
+            'caption':pos['caption'],
+            'description':pos['description'],
+            'likes':len(pos['likes']),
+            'image':pos['image_filename'],
+            'posted_user':name
+        }
+        posts_dic.append(posts_list)
+    return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user,'posts_dic':posts_dic})
+
+
 
 
 @app.post('/add_video',response_class = HTMLResponse)
-async def add_video(request:Request,
+def add_video(request:Request,
                     caption:str = Form(...),
                     description:str = Form(...),
                     video_database: UploadFile = File(...)):
-    global logged_in_user
+    
     post = {'username':logged_in_user,
             'caption':caption,
             'description':description,
+            'image_filename':"",
             'video_filename': video_database.filename,
             'likes':[],
+            'comments':[],
             'created_at': datetime.now()
         }
-    # print(post)
     post_collection.insert_one(post)
-    return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user})
+
+    people = user_collection.find()
+    posts_details = post_collection.find()
+
+
+    posts_dic=[]
+    for pos in posts_details:
+        name = user_collection.find_one({'username':pos['username']})
+        posts_list ={
+            'username':pos['username'],
+            'caption':pos['caption'],
+            'description':pos['description'],
+            'likes':len(pos['likes']),
+            'video':pos['video_filename'],
+            'posted_user':name
+        }
+        posts_dic.append(posts_list)
+    return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user,'posts_dic':posts_dic})

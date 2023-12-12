@@ -10,7 +10,6 @@
     <div id="sidebar">
         <div id="logo">
             <span class="logo-text">Instagram</span>
-
         </div>
         <a href="/home"><span class="icon">🏠</span> Home</a>
         <a href="#search"><span class="icon">🔍</span> Search</a>
@@ -20,8 +19,8 @@
         <a href="#notifications"><span class="icon">🔔</span> Notifications</a>
         <a href="/addpost"><span class="icon">➕</span> Create</a>
         <div id="profile-section">
-            <img src="static/img/s3.png" alt="Profile Image" class="profile-image">
-            <a href="#profile" class="profile-link">Your Name</a>
+            <img src="static/images/{{user.image}}" alt="Profile Image" class="profile-image">
+            <a href="#profile" class="profile-link">{{user.firstname}}</a>
         </div>
     </div>
     <div class = "content">
@@ -46,19 +45,33 @@
             </div>
         </section>
 
-        {%for user,details in posts.items()%}
+        <div>
+          
+        </div>
+        {% for post in posts_dic %}
         <section class="main">
             <div class="wrapper">
                 <div class="left-col">
                     <div class="post">
                         <div class="info">
                             <div class="user">
-                                <div class="profile-pic"><img src="static/img/s3.png" alt=""></div>
-                                <p class="username">{{user}},{{details.likes}}</p>
+                                <div class="profile-pic">
+                                    {% if post.posted_user.image %}
+                                        <img src="static/images/{{post.posted_user.image}}" alt="">
+                                    {% else %}
+                                        <img src="static/img/s3.png" alt="">
+                                    {% endif %}
+
+                                </div>
+                                <p class="username">{{post.username}}</p>
                             </div>
                             <img src="static/img/s3.png" class="options" alt="">
                         </div>
-                        <img src="static/img/s3.png" class="post-image" alt="">
+                        {% if post.image%}
+                            <img src="static/images/{{post.image}}" class="post-image" alt="">
+                        {% else %}
+                            <img src="static/img/s3.png" class="post-image" alt="">
+                        {% endif%}
                         <div class="post-content">
                             <div class="reaction-wrapper">
                                 <img src="static/home_images/notification.svg" class="icon" alt="">
@@ -66,8 +79,8 @@
                                 <img src="static/img/s3.png" class="icon" alt="">
                                 <img src="static/img/s3.png" class="save icon" alt="">
                             </div>
-                            <p class="likes">1,012 likes</p>
-                            <p class="description"><span>username </span> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Pariatur tenetur veritatis placeat, molestiae impedit aut provident eum quo natus molestias?</p>
+                            <p class="likes">{{post.likes}}</p>
+                            <p class="description">{{post.description}}</p>
                             <p class="post-time">2 minutes ago</p>
                         </div>
                         <div class="comment-wrapper">

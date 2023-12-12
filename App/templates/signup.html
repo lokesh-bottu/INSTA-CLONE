@@ -20,12 +20,14 @@
             </div>
             </div>
             <div class="container">
-            <form action="/signup" method = "post">
+            <form action="/signup" method = "post" enctype="multipart/form-data">
                 <input type="text" name = "email" placeholder="Mobile Number or Email">
                 <input type="text" name = "username" placeholder="User Name">
                 <input type="text" name = "firstname" placeholder="First Name">
                 <input type="text" name = "lastname" placeholder="Last Name">
                 <input type="password" name = "password" placeholder="Password">
+                <label for="image">Image:</label>
+                <input type="file" name="image_database" class="browse" accept="image/*">
                 <button type = "submit">Sign up</button>
             </form>
             
