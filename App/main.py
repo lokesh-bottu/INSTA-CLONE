@@ -182,25 +182,25 @@ def add_image(request:Request,
     # print(post)
     post_collection.insert_one(post)
 
-    people = user_collection.find()
-    posts_details = post_collection.find()
+    # people = user_collection.find()
+    # posts_details = post_collection.find()
 
 
-    posts_dic=[]
-    for pos in posts_details:
-        name = user_collection.find_one({'username':pos['username']})
+    # posts_dic=[]
+    # for pos in posts_details:
+    #     name = user_collection.find_one({'username':pos['username']})
         
-        posts_list ={
-            'username':pos['username'],
-            'caption':pos['caption'],
-            'description':pos['description'],
-            'likes':len(pos['likes']),
-            'image':pos['image_filename'],
-            'posted_user':name
-        }
-        posts_dic.append(posts_list)
-    return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user,'posts_dic':posts_dic})
-
+    #     posts_list ={
+    #         'username':pos['username'],
+    #         'caption':pos['caption'],
+    #         'description':pos['description'],
+    #         'likes':len(pos['likes']),
+    #         'image':pos['image_filename'],
+    #         'posted_user':name
+    #     }
+    #     posts_dic.append(posts_list)
+    # return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user,'posts_dic':posts_dic})
+    return RedirectResponse('/home')
 
 
 
@@ -221,20 +221,24 @@ def add_video(request:Request,
         }
     post_collection.insert_one(post)
 
-    people = user_collection.find()
-    posts_details = post_collection.find()
+    # people = user_collection.find()
+    # posts_details = post_collection.find()
 
 
-    posts_dic=[]
-    for pos in posts_details:
-        name = user_collection.find_one({'username':pos['username']})
-        posts_list ={
-            'username':pos['username'],
-            'caption':pos['caption'],
-            'description':pos['description'],
-            'likes':len(pos['likes']),
-            'video':pos['video_filename'],
-            'posted_user':name
-        }
-        posts_dic.append(posts_list)
-    return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user,'posts_dic':posts_dic})
+    # posts_dic=[]
+    # for pos in posts_details:
+    #     name = user_collection.find_one({'username':pos['username']})
+    #     posts_list ={
+    #         'username':pos['username'],
+    #         'caption':pos['caption'],
+    #         'description':pos['description'],
+    #         'likes':len(pos['likes']),
+    #         'video':pos['video_filename'],
+    #         'posted_user':name
+    #     }
+    #     posts_dic.append(posts_list)
+
+
+    # 'posts_dic':posts_dic
+    # return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user})
+    return RedirectResponse('/home')
