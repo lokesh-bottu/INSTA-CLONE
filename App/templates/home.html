@@ -87,8 +87,8 @@
                         </div>
                         <div class="comment-wrapper">
                             <img src="static/img/s3.png" class="icon" alt="">
-                            <input type="text" class="comment-box" placeholder="Add a comment">
-                            <button class="comment-btn">post</button>
+                            <input type="text" id="comment_text{{post.id}}" class="comment-box" placeholder="Add a comment">
+                            <button class="comment-btn" onclick="addComment('{{ post.id }}')">post</button>
                         </div>
                     </div>
                 </div>
@@ -122,6 +122,35 @@
             })
             .catch(error => console.error('Error:', error));
         }
+
+
+        function addComment(postId) {
+            var commentText = document.getElementById('comment_text' + postId).value;
+            console.log(commentText)
+
+            fetch(`/add_comment/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'comment_text': commentText,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Handle the response as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+}
+
+
+
+
+
     </script>
 
 </body>

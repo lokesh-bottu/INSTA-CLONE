@@ -213,4 +213,20 @@ async def print_post_id(post_id: str):
 
     
 
+@app.post("/add_comment/{post_id}")
+async def add_comment(request: Request, post_id: str, comment_text: str = Form(...)):
+    print(f"Received comment for Post ID {post_id}: {comment_text}")
+    from bson.objectid import ObjectId
+    id = ObjectId(post_id)
+    global logged_in_user
+   
+    comment = {'user':logged_in_user,'text':comment_text,'created_at':datetime.now()}
+    post_collection.update_one({"_id": id}, {"$push": {"comments": comment}})
+
+    update_post = post_collection.find_one({"_id":id})
+    print(update_post['comments'])
+
+    return {"message": "Comment added successfully"}
     
+
+
