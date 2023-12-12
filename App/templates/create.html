@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/create.css">
+</head>
+<body>
+    <button><a href = "/home">Home</a></button>
+
+    <div class="outer-container">
+        <nav>
+            <button onclick="showContent('uploadVideo')">Image</button>
+            <button onclick="showContent('imageVideo')" class="active">Video</button>
+        </nav>
+
+        <div id="uploadVideo" class="content-container">
+            <form   action="/add_image" method="POST" class="form" enctype="multipart/form-data">
+
+           
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="caption" placeholder="Enter title">
+
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" placeholder="Enter description"></textarea>
+
+                <label for="image">Image:</label>
+                <input type="file" name="image_database" class="browse" accept="image/*">
+
+                <input class = "post_title" type="submit" value="Submit">
+
+            </form>
+        </div>
+
+        <div id="imageVideo" class="content-container active">
+            <form  action="/add_video" method="POST" class="form" enctype="multipart/form-data">
+            
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="caption" placeholder="Enter title">
+
+
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" placeholder="Enter description"></textarea>
+
+                <label for="video">video:</label>
+                <input type="file" name="video_database" class="browse" accept="video/*">
+                <input class = "post_title" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showContent(contentId) {
+            // Hide all content containers
+            var allContents = document.querySelectorAll('.content-container');
+            allContents.forEach(function (content) {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
+
+            // Show the selected content
+            var selectedContent = document.getElementById(contentId);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+                selectedContent.classList.add('active');
+            }
+        }
+
+        // Set the default active content
+        showContent('imageVideo');
+    </script>
+</body>
+</html>
