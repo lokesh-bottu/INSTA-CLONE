@@ -45,9 +45,6 @@
             </div>
         </section>
 
-        <div>
-          
-        </div>
         {% for post in posts_dic %}
         <section class="main">
             <div class="wrapper">
@@ -63,7 +60,7 @@
                                     {% endif %}
 
                                 </div>
-                                <p class="username">{{post.username}}</p>
+                                <p class="username">{{post.username}},{{post.id}}</p>
                             </div>
                             <img src="static/img/s3.png" class="options" alt="">
                         </div>
@@ -74,12 +71,17 @@
                         {% endif%}
                         <div class="post-content">
                             <div class="reaction-wrapper">
-                                <img src="static/home_images/notification.svg" class="icon" alt="">
+                                {%if post.is_liked%}
+                                    <img id = "likeid{{post.id}}" src="static/home_images/heart-solid.svg" class="icon like1" alt="" onclick="likepost('{{post.id}}')">
+                                {% else %}
+                                    <img id = "likeid{{post.id}}" src="static/home_images/notification.svg" class="icon like1" alt="" onclick="likepost('{{post.id}}')">
+                                {% endif %}
+                                
                                 <img src="static/home_images/message.svg" class="icon" alt="">
                                 <img src="static/img/s3.png" class="icon" alt="">
                                 <img src="static/img/s3.png" class="save icon" alt="">
                             </div>
-                            <p class="likes">{{post.likes}}</p>
+                            <p class="likes"><span id="likes_count_{{ post.id }}">{{post.likes}}</p>
                             <p class="description">{{post.description}}</p>
                             <p class="post-time">2 minutes ago</p>
                         </div>
@@ -94,5 +96,33 @@
         </section>
         {% endfor %}
     </div>
+
+    <script>
+        function likepost(postId) {
+            fetch(`likepost/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                document.getElementById(`likes_count_${postId}`).innerText = data.likes_count;
+
+                var imageElement = document.querySelector('.like1');
+                if (data.mesage1){
+                    imageElement.src = 'static/home_images/heart-solid.svg';
+                }
+                else{
+                    imageElement.src = 'static/home_images/notification.svg';
+                }
+
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
 </body>
 </html>

@@ -88,15 +88,18 @@ def home_page(request: Request):
     for pos in posts_details:
         name = user_collection.find_one({'username':pos['username']})
 
-        
-
         posts_list ={
+            'id':pos["_id"],
             'username':pos['username'],
             'caption':pos['caption'],
             'description':pos['description'],
             'likes':len(pos['likes']),
-            'posted_user':name
+            'posted_user':name,
+            'is_liked':False
         }
+
+        if(logged_in_user in pos['likes']):
+            posts_list['is_liked']=True
         
         if(pos['video_filename']==""):
             posts_list['image'] = pos['image_filename']
@@ -105,8 +108,6 @@ def home_page(request: Request):
         posts_dic.append(posts_list)
 
     return templates.TemplateResponse("home.html", {'request': request, 'user': user,"posts_dic":posts_dic})
-
-
 
 
 
@@ -144,22 +145,9 @@ def home_page(request: Request):
 
 
 
-
-
-
-
 @app.get('/addpost',response_class=HTMLResponse)
 def addpost(request:Request):
     return templates.TemplateResponse("create.html",{'request':request,'user':logged_in_user})
-
-
-
-
-
-
-
-
-
 
 
 
@@ -181,25 +169,6 @@ def add_image(request:Request,
     
     # print(post)
     post_collection.insert_one(post)
-
-    # people = user_collection.find()
-    # posts_details = post_collection.find()
-
-
-    # posts_dic=[]
-    # for pos in posts_details:
-    #     name = user_collection.find_one({'username':pos['username']})
-        
-    #     posts_list ={
-    #         'username':pos['username'],
-    #         'caption':pos['caption'],
-    #         'description':pos['description'],
-    #         'likes':len(pos['likes']),
-    #         'image':pos['image_filename'],
-    #         'posted_user':name
-    #     }
-    #     posts_dic.append(posts_list)
-    # return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user,'posts_dic':posts_dic})
     return RedirectResponse('/home')
 
 
@@ -220,25 +189,28 @@ def add_video(request:Request,
             'created_at': datetime.now()
         }
     post_collection.insert_one(post)
-
-    # people = user_collection.find()
-    # posts_details = post_collection.find()
-
-
-    # posts_dic=[]
-    # for pos in posts_details:
-    #     name = user_collection.find_one({'username':pos['username']})
-    #     posts_list ={
-    #         'username':pos['username'],
-    #         'caption':pos['caption'],
-    #         'description':pos['description'],
-    #         'likes':len(pos['likes']),
-    #         'video':pos['video_filename'],
-    #         'posted_user':name
-    #     }
-    #     posts_dic.append(posts_list)
-
-
-    # 'posts_dic':posts_dic
-    # return templates.TemplateResponse('home.html',{'request':request,'user':logged_in_user})
     return RedirectResponse('/home')
+
+
+
+
+@app.post("/likepost/{post_id}")
+async def print_post_id(post_id: str):
+    print(f"Clicked on image with Post ID: {post_id}")
+    from bson.objectid import ObjectId
+    id = ObjectId(post_id)
+    global logged_in_user
+    update_post = post_collection.find_one({"_id":id})
+    if update_post:
+        if logged_in_user in update_post['likes']:
+            post_collection.update_one({"_id": id}, {"$pull": {"likes": logged_in_user}})
+            return {"status": "success", "message": f"Removed {logged_in_user} from likes",'likes_count':len(update_post['likes'])-1,"mesage1":False}
+        else:
+            post_collection.update_one({"_id": id}, {"$push": {"likes": logged_in_user}})
+            return {"status": "success", "message": f"Added {logged_in_user} to likes",'likes_count':len(update_post['likes'])+1,"mesage1":True}
+    else:
+        return {"status": "error", "message": "Post not found"}
+
+    
+
+    
