@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/showcomments.css">
+</head>
+<body>
+    <h1>comments page</h1>
+    <div>
+        <a href="/home"><button type="button"><img src="static/home_images/home.svg"  alt=""></button></a>
+    <div class="main">
+        <div class="a">
+            <img src="/static/images/{{post.image_filename}}" alt="">
+        </div>
+        <div class="b">
+            <div class="post_user">
+                {% if user.image %}
+                    <img src="/static/images/{{user.image}}"  alt="if image">
+                {% else %}
+                    <img src="static/home_images/profile.svg'"  alt="else image">
+                {% endif %}
+                <p>{{user.username}}</p>
+            </div>
+            <div class="comment_box">
+                {% for com in comments%}
+                    <div class="comments">
+                        {% if com.com_user.image%}
+                            <img src="/static/images/{{com.com_user.image}}"  alt="">
+                        {% else %}
+                            <img src="static/home_images/profile.svg"  alt="">
+                        {% endif %}
+                        <h5>{{ com.com_user.username }}</h5>
+                        <p>{{ com.text }}</p>
+                    </div>
+                {% endfor %}
+                <div class="post">
+                    <form method="POST" action="">
+                      <input type="text" class="comment"  name="comment_text" placeholder="Add a comment...">
+                      <button type="submit">Post</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

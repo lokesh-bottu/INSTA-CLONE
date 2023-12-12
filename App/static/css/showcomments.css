@@ -1,0 +1,106 @@
+body{
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(236, 232, 232);
+    font-family: sans-serif;
+    background-image: url('/static/images/profile_images/background.png');
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    background-color: black;
+    filter: blur(5px) ; 
+    filter: brightness(40%) contrast(120%); /* Adjust brightness and contrast values as needed */
+    z-index: -1;
+}
+button{
+    cursor: pointer;
+}
+
+.main{
+    position:relative;
+    display: flex;
+}
+
+a{
+    align-self: flex-end;
+}
+
+.a img{
+    filter: none;
+    width:  50vw;
+    height: 80vh;
+}
+
+.b{
+    background-color: white;
+    padding-left: 10px;
+    width: 30vw;
+    display: flex;
+    flex-direction: column;
+}
+.b .post_user{
+    display: flex;
+    align-items: center;
+    gap: 1%;
+    border-bottom: .5px solid lightgray;
+}
+.b img{
+    background-color: white;
+    height: 30px;
+    width: 30px;
+    border-radius: 100%;
+    border: solid;
+}
+.b .comment_box{
+    padding-top: 10px;
+    background-color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.b .comment_box .comments{
+    display: flex;
+    align-items: center;
+    gap: 2%;
+    margin-bottom: 1%;   
+}
+.b .comment_box .post{
+    position: absolute;
+    bottom: 0;
+    border-top: .5px solid lightgray;
+}
+.b .comment_box .comments *{
+    padding: 0;
+    margin: 0;
+}
+input{
+    width: 23vw;
+    height: 30px;
+    border: none;
+}
+.comment_box button{
+    height: 40px;
+    width: 5vw;
+    background-color: white;
+    color: lightskyblue;
+    border: none;
+}
+
+@media (max-width:1300px){
+    .a img{
+        height: 40vh;
+    }
+}

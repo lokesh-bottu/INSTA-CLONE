@@ -14,7 +14,6 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, EmailStr
 import pprint
 
-
 printer = pprint.PrettyPrinter()
 
 client = MongoClient("mongodb+srv://lokesh:123@cluster0.lyeh3dg.mongodb.net/?retryWrites=true&w=majority")
@@ -94,6 +93,7 @@ def home_page(request: Request):
             'caption':pos['caption'],
             'description':pos['description'],
             'likes':len(pos['likes']),
+            'comments':len(pos['comments']),
             'posted_user':name,
             'is_liked':False
         }
@@ -123,21 +123,26 @@ def home_page(request: Request):
     for pos in posts_details:
         name = user_collection.find_one({'username':pos['username']})
 
-        
-
         posts_list ={
+            'id':pos["_id"],
             'username':pos['username'],
             'caption':pos['caption'],
             'description':pos['description'],
             'likes':len(pos['likes']),
-            'posted_user':name
+            'comments':len(pos['comments']),
+            'posted_user':name,
+            'is_liked':False
         }
+
+        if(logged_in_user in pos['likes']):
+            posts_list['is_liked']=True
         
         if(pos['video_filename']==""):
             posts_list['image'] = pos['image_filename']
         else:
             posts_list['video'] = pos['video_filename']
         posts_dic.append(posts_list)
+
 
     return templates.TemplateResponse("home.html", {'request': request, 'user': user,"posts_dic":posts_dic})
 
@@ -230,3 +235,25 @@ async def add_comment(request: Request, post_id: str, comment_text: str = Form(.
     
 
 
+@app.get('/showcomments/{post_id}')
+def showcomments(request:Request,post_id:str):
+    print("show comments called")
+    global logged_in_user
+    from bson.objectid import ObjectId
+    id = ObjectId(post_id)
+    post_instance = post_collection.find_one({'_id':id})
+    user_instance =  user_collection.find_one({'username':post_instance['username']})
+    logged_in = user_collection.find_one({'username':logged_in_user})
+    comments =[]
+    
+    for com in post_instance['comments']:
+        print("for loop")
+        print("this is ",com)
+        sub_com ={'com_user' : user_collection.find_one({'username':com['user']}),
+                  'text':com['text'],
+                  'created_at':com['created_at']}
+        comments.append(sub_com)
+    for com in comments:
+        print(com)
+    print(post_instance['image_filename'])
+    return templates.TemplateResponse('showcomments.html',{'request':request,'post':post_instance,'post_user':user_instance,'user':logged_in,'comments':comments})

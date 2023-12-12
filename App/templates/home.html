@@ -84,6 +84,7 @@
                             <p class="likes"><span id="likes_count_{{ post.id }}">{{post.likes}}</p>
                             <p class="description">{{post.description}}</p>
                             <p class="post-time">2 minutes ago</p>
+                            <p class = "home_comments"><a href = "/showcomments/{{post.id}}">View all {{post.comments}} comments</a></p>
                         </div>
                         <div class="comment-wrapper">
                             <img src="static/img/s3.png" class="icon" alt="">
@@ -145,10 +146,7 @@
             .catch(error => {
                 console.error('Error:', error);
             });
-}
-
-
-
+        }
 
 
     </script>
