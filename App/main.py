@@ -88,6 +88,7 @@ def home_page(request: Request):
         name = user_collection.find_one({'username':pos['username']})
 
         posts_list ={
+            'post_instance':pos,
             'id':pos["_id"],
             'username':pos['username'],
             'caption':pos['caption'],
@@ -124,6 +125,7 @@ def home_page(request: Request):
         name = user_collection.find_one({'username':pos['username']})
 
         posts_list ={
+            'post_instance':pos,
             'id':pos["_id"],
             'username':pos['username'],
             'caption':pos['caption'],
@@ -253,7 +255,9 @@ def showcomments(request:Request,post_id:str):
                   'text':com['text'],
                   'created_at':com['created_at']}
         comments.append(sub_com)
-    for com in comments:
-        print(com)
-    print(post_instance['image_filename'])
+
+
+    # for com in comments:
+    #     print(com)
+    # print(post_instance['image_filename'])
     return templates.TemplateResponse('showcomments.html',{'request':request,'post':post_instance,'post_user':user_instance,'user':logged_in,'comments':comments})

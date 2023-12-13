@@ -71,10 +71,10 @@
                         {% endif%}
                         <div class="post-content">
                             <div class="reaction-wrapper">
-                                {%if post.is_liked%}
-                                    <img id = "likeid{{post.id}}" src="static/home_images/heart-solid.svg" class="icon like1" alt="" onclick="likepost('{{post.id}}')">
+                                {%if user.username in post.post_instance.likes %}
+                                    <img src="static/home_images/heart-solid.svg" class="icon like1" id =imgid__{{post.id}} alt="" onclick="likepost('{{post.id}}')">
                                 {% else %}
-                                    <img id = "likeid{{post.id}}" src="static/home_images/notification.svg" class="icon like1" alt="" onclick="likepost('{{post.id}}')">
+                                    <img src="static/home_images/notification.svg" class="icon like1" id =imgid__{{post.id}} alt="" onclick="likepost('{{post.id}}')">
                                 {% endif %}
                                 
                                 <img src="static/home_images/message.svg" class="icon" alt="">
@@ -112,11 +112,13 @@
                 console.log(data)
                 document.getElementById(`likes_count_${postId}`).innerText = data.likes_count;
 
-                var imageElement = document.querySelector('.like1');
+                var imageElement = document.querySelector(`#imgid__${postId}`);
                 if (data.mesage1){
+                    console.log("changing to heart-solid")
                     imageElement.src = 'static/home_images/heart-solid.svg';
                 }
                 else{
+                    console.log("changing to Notification")
                     imageElement.src = 'static/home_images/notification.svg';
                 }
 
