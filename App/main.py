@@ -275,3 +275,13 @@ async def addcomment(request: Request, post_id: str, comment_text: str = Form(..
     print(update_post['comments'])
 
     return {'message': 'Comment added successfully'}
+
+
+
+@app.get('/profile',response_class=HTMLResponse)
+def get_profile(request:Request):
+    global logged_in_user
+    user_images = post_collection.find({'username':logged_in_user})
+    user_instance = user_collection.find_one({'username':logged_in_user})
+    number = post_collection.count_documents({'username': logged_in_user})
+    return templates.TemplateResponse('profile.html',{'request':request,'user_images':user_images,'user':user_instance,'number':number})
