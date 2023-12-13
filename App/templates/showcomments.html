@@ -36,14 +36,39 @@
                     </div>
                 {% endfor %}
                 <div class="post">
-                    <form method="POST" action="">
-                      <input type="text" class="comment"  name="comment_text" placeholder="Add a comment...">
-                      <button type="submit">Post</button>
-                    </form>
+                      <input type="text" id = "comment_text{{id}}" class="comment"  name="comment_text" placeholder="Add a comment...">
+                      <button type="submit" onclick="addComment('{{id}}')">Post</button>
                 </div>
             </div>
         </div>
     </div>
     </div>
+
+    <script>
+        function addComment(postId) {
+            var commentInput = document.getElementById('comment_text' + postId);
+            var commentText = commentInput.value;
+            console.log(commentText)
+
+            fetch(`/addcomment/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'comment_text': commentText,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                commentInput.value = '';
+                window.location.href = `/showcomments/${postId}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+            }
+    </script>
 </body>
 </html>

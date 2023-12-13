@@ -87,7 +87,7 @@
                             <p class = "home_comments"><a href = "/showcomments/{{post.id}}">View all {{post.comments}} comments</a></p>
                         </div>
                         <div class="comment-wrapper">
-                            <img src="static/img/s3.png" class="icon" alt="">
+                            <img src="static/images/{{post.posted_user.image}}" class="icon" alt="">
                             <input type="text" id="comment_text{{post.id}}" class="comment-box" placeholder="Add a comment">
                             <button class="comment-btn" onclick="addComment('{{ post.id }}')">post</button>
                         </div>
@@ -128,7 +128,9 @@
 
 
         function addComment(postId) {
-            var commentText = document.getElementById('comment_text' + postId).value;
+
+            var commentInput = document.getElementById('comment_text' + postId);
+            var commentText = commentInput.value;
             console.log(commentText)
 
             fetch(`/add_comment/${postId}`, {
@@ -143,15 +145,14 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                // Handle the response as needed
+                commentInput.value = '';
             })
             .catch(error => {
                 console.error('Error:', error);
             });
         }
-
-
     </script>
 
 </body>
 </html>
+

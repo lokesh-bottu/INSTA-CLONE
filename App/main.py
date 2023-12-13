@@ -256,8 +256,22 @@ def showcomments(request:Request,post_id:str):
                   'created_at':com['created_at']}
         comments.append(sub_com)
 
+    return templates.TemplateResponse('showcomments.html',{'request':request,'post':post_instance,'post_user':user_instance,'user':logged_in,'comments':comments,'id':post_id})
 
-    # for com in comments:
-    #     print(com)
-    # print(post_instance['image_filename'])
-    return templates.TemplateResponse('showcomments.html',{'request':request,'post':post_instance,'post_user':user_instance,'user':logged_in,'comments':comments})
+
+
+
+@app.post("/addcomment/{post_id}")
+async def addcomment(request: Request, post_id: str, comment_text: str = Form(...)):
+    print(f"Received comment for Post ID {post_id}: {comment_text}")
+    from bson.objectid import ObjectId
+    id = ObjectId(post_id)
+    global logged_in_user
+   
+    comment = {'user':logged_in_user,'text':comment_text,'created_at':datetime.now()}
+    post_collection.update_one({"_id": id}, {"$push": {"comments": comment}})
+
+    update_post = post_collection.find_one({"_id":id})
+    print(update_post['comments'])
+
+    return {'message': 'Comment added successfully'}
